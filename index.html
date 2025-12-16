@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>👑 فلافل وطعمية البيك - الحوبان</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #D32F2F; --secondary: #FFC107; --bg: #F4F6F8;
+            --card-bg: white; --text: #2c3e50; --text-light: #777;
+            --green: #2ecc71; --border-color: #eee; --shadow-color: rgba(0,0,0,0.05);
+        }
+        body.dark-mode {
+            --bg: #121212; --card-bg: #1e1e1e; --text: #e0e0e0;
+            --text-light: #aaaaaa; --border-color: #333; --shadow-color: rgba(255,255,255,0.05);
+        }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Tajawal', sans-serif; background-color: var(--bg); margin: 0; padding-bottom: 160px; color: var(--text); transition: 0.3s; }
+        header { background: var(--card-bg); padding: 15px; text-align: center; box-shadow: 0 4px 15px var(--shadow-color); position: sticky; top: 0; z-index: 1000; border-bottom: 4px solid var(--primary); }
+        #theme-toggle { position: absolute; top: 20px; left: 20px; width: 40px; height: 40px; background: var(--border-color); border: none; border-radius: 50%; cursor: pointer; font-size: 20px; }
+        .logo-area img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--secondary); object-fit: cover; }
+        .nav-scroller { display: flex; gap: 10px; overflow-x: auto; padding: 15px; background: var(--bg); }
+        .nav-item { background: var(--card-bg); border: 1px solid var(--border-color); padding: 10px 20px; border-radius: 25px; white-space: nowrap; cursor: pointer; color: var(--text); font-weight: bold; }
+        .nav-item.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .menu-grid { padding: 10px; display: grid; gap: 15px; }
+        .menu-item { background: var(--card-bg); border-radius: 15px; padding: 10px; display: flex; align-items: center; box-shadow: 0 3px 10px var(--shadow-color); position: relative; }
+        .new-badge { position: absolute; top: 10px; left: 10px; background: var(--green); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.7rem; font-weight: bold; }
+        .menu-item img { width: 90px; height: 90px; border-radius: 12px; object-fit: cover; margin-left: 15px; }
+        .item-info { flex: 1; }
+        .price { color: var(--primary); font-weight: bold; font-size: 1.1rem; }
+        .controls { display: flex; align-items: center; background: var(--border-color); border-radius: 20px; padding: 2px; }
+        .btn-qty { width: 35px; height: 35px; border: none; background: var(--card-bg); border-radius: 50%; color: var(--primary); font-size: 1.2rem; cursor: pointer; }
+        .qty-val { width: 30px; text-align: center; font-weight: bold; }
+        .cart-bar { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card-bg); padding: 15px; border-radius: 20px 20px 0 0; box-shadow: 0 -5px 20px var(--shadow-color); z-index: 2000; }
+        .action-btn { width: 100%; padding: 14px; border: none; border-radius: 12px; background: #25D366; color: white; font-size: 1.1rem; font-weight: bold; cursor: pointer; }
+        .action-btn:disabled { background: #ccc; }
+        .status-badge { padding: 5px 15px; border-radius: 20px; font-size: 0.85rem; font-weight: bold; display: inline-block; margin-top: 5px; }
+        .open { background: #e8f5e9; color: #1b5e20; }
+    </style>
+</head>
+<body>
+
+<header>
+    <button id="theme-toggle">☀️</button>
+    <div class="logo-area">
+        <img src="https://x.com/i/status/2000694191945372122" onerror="this.src='https://cdn-icons-png.flaticon.com/512/1046/1046751.png'">
+    </div>
+    <h1>فلافل وطعمية البيك 👑</h1>
+    <div class="status-badge open">🟢 مفتوح - نستقبل الطلبات</div>
+</header>
+
+<div class="nav-scroller">
+    <button class="nav-item active" onclick="filter('all', this)">الكل</button>
+    <button class="nav-item" onclick="filter('سندوتشات', this)">سندوتشات</button>
+    <button class="nav-item" onclick="filter('وجبات', this)">وجبات</button>
+    <button class="nav-item" onclick="filter('مشروبات', this)">مشروبات</button>
+</div>
+
+<div id="menu-list" class="menu-grid"></div>
+
+<div class="cart-bar">
+    <div style="display:flex; justify-content:space-between; margin-bottom:10px; font-weight:bold;">
+        <span>الإجمالي:</span>
+        <span id="grand-total">0 ريال</span>
+    </div>
+    <button id="main-btn" class="action-btn" disabled>سلة فارغة 🛒</button>
+</div>
+
+<script>
+    const menu = [
+        { id: 7, name: "مشروب قوة أسد الجديد 🦁", price: 200, cat: "مشروبات", img: "https://x.com/i/status/2000924948911866140", isNew: true },
+        { id: 1, name: "ساندويتش فلافل", price: 100, cat: "سندوتشات", img: "https://x.com/i/status/2000693755540570452" },
+        { id: 2, name: "فلافل مع البيض", price: 150, cat: "سندوتشات", img: "https://x.com/i/status/2000693957794107674" },
+        { id: 3, name: "وجبة ماكس الملكي", price: 500, cat: "وجبات", img: "https://x.com/i/status/2000694048965710298" },
+        { id: 4, name: "بطاطس مقرمشة", price: 400, cat: "وجبات", img: "https://x.com/i/status/2000694113390277046" },
+        { id: 5, name: "سفن أب", price: 200, cat: "مشروبات", img: "https://x.com/i/status/2000694286560460912" },
+        { id: 6, name: "مشروب أسد", price: 100, cat: "مشروبات", img: "https://x.com/i/status/2000693886553882736" }
+    ];
+
+    let cart = {};
+
+    function renderMenu(category = 'all') {
+        const container = document.getElementById('menu-list');
+        container.innerHTML = '';
+        menu.forEach(item => {
+            if (category === 'all' || item.cat === category) {
+                const qty = cart[item.id] || 0;
+                container.innerHTML += `
+                <div class="menu-item">
+                    ${item.isNew ? '<div class="new-badge">جديد ✨</div>' : ''}
+                    <img src="${item.img}" onerror="this.src='https://cdn-icons-png.flaticon.com/512/706/706164.png'">
+                    <div class="item-info">
+                        <h3>${item.name}</h3>
+                        <div class="price">${item.price} ريال</div>
+                    </div>
+                    <div class="controls">
+                        <button class="btn-qty" onclick="updateQty(${item.id}, -1)">-</button>
+                        <span class="qty-val">${qty}</span>
+                        <button class="btn-qty" onclick="updateQty(${item.id}, 1)">+</button>
+                    </div>
+                </div>`;
+            }
+        });
+    }
+
+    window.updateQty = (id, change) => {
+        cart[id] = (cart[id] || 0) + change;
+        if (cart[id] <= 0) delete cart[id];
+        updateTotal();
+        renderMenu(document.querySelector('.nav-item.active').innerText === 'الكل' ? 'all' : document.querySelector('.nav-item.active').innerText);
+    };
+
+    function updateTotal() {
+        let total = 0;
+        Object.keys(cart).forEach(id => {
+            const item = menu.find(m => m.id == id);
+            total += item.price * cart[id];
+        });
+        document.getElementById('grand-total').innerText = total + " ريال";
+        const btn = document.getElementById('main-btn');
+        btn.disabled = total === 0;
+        btn.innerText = total === 0 ? "سلة فارغة 🛒" : `إتمام الطلب (${total} ريال)`;
+    }
+
+    document.getElementById('theme-toggle').onclick = () => {
+        document.body.classList.toggle('dark-mode');
+        document.getElementById('theme-toggle').innerText = document.body.classList.contains('dark-mode') ? "🌙" : "☀️";
+    };
+
+    renderMenu();
+</script>
+</body>
+</html>
