@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 نظام البيك الفائق | النسخة الكاملة والمستقرة</title>
+    
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEMP123456"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-TEMP123456');
+    </script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary: #2563eb; --bg: #f4f7f6; --card-bg: #FFFFFF; --text: #2d3436; --border: #dfe6e9; }
+        
+        /* الثيمات الخمسة المطلوبة */
+        body.theme-blue { --primary: #2563eb; --bg: #f0f4ff; --text: #1e3a8a; }
+        body.theme-pink { --primary: #db2777; --bg: #fdf2f8; --text: #831843; }
+        body.theme-white { --primary: #475569; --bg: #ffffff; --card-bg: #f8fafc; --text: #0f172a; --border: #e2e8f0; }
+        body.theme-cyan { --primary: #0891b2; --bg: #ecfeff; --text: #164e63; }
+        body.theme-black { --primary: #fbbf24; --bg: #0f172a; --card-bg: #1e293b; --text: #f8fafc; --border: #334155; }
+
+        * { box-sizing: border-box; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Tajawal', sans-serif; background-color: var(--bg); margin: 0; color: var(--text); padding-bottom: 120px; }
+
+        /* لوحة الألوان الذكية */
+        .color-panel-btn { position: absolute; top: 20px; left: 20px; background: var(--primary); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; cursor: pointer; z-index: 1001; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .color-options { position: absolute; top: 75px; left: 20px; background: var(--card-bg); padding: 10px; border-radius: 15px; display: none; flex-direction: column; gap: 10px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 1001; border: 1px solid var(--border); }
+        .color-options.show { display: flex; }
+        .swatch { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; cursor: pointer; }
+
+        header { background: var(--card-bg); padding: 30px 20px; text-align: center; border-bottom: 5px solid var(--primary); box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        .logo-area img { width: 100px; height: 100px; border-radius: 50%; border: 3px solid var(--primary); }
+
+        .menu-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .menu-item { background: var(--card-bg); border-radius: 20px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 10px 20px rgba(0,0,0,0.02); display: flex; flex-direction: column; }
+        .menu-item img { width: 100%; height: 200px; object-fit: cover; }
+        .item-content { padding: 15px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .price-tag { color: var(--primary); font-weight: 900; font-size: 1.3rem; margin: 10px 0; }
+
+        .controls { display: flex; align-items: center; justify-content: space-between; background: var(--bg); border-radius: 12px; padding: 5px; }
+        .btn-qty { width: 40px; height: 40px; border: none; background: var(--primary); color: white; border-radius: 10px; cursor: pointer; font-size: 1.2rem; font-weight: bold; }
+        
+        .cart-bar { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 600px; background: var(--card-bg); padding: 15px 25px; border-radius: 25px; border: 2px solid var(--primary); box-shadow: 0 15px 40px rgba(0,0,0,0.2); z-index: 1000; display: flex; justify-content: space-between; align-items: center; }
+        .action-btn { background: #10B981; color: white; padding: 12px 25px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; font-family: 'Tajawal'; }
+
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px; }
+        .modal-box { background: var(--card-bg); padding: 30px; border-radius: 25px; width: 100%; max-width: 450px; }
+        .input-field { width: 100%; padding: 12px; margin: 10px 0; border-radius: 10px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: 'Tajawal'; font-size: 1rem; }
+        
+        @media (max-width: 600px) { .menu-grid { grid-template-columns: 1fr 1fr; gap: 10px; padding: 10px; } .menu-item img { height: 130px; } .price-tag { font-size: 1rem; } }
+    </style>
+</head>
+<body class="theme-blue">
+
+    <button class="color-panel-btn" onclick="vibrate(); toggleColorPanel()">🎨</button>
+    <div class="color-options" id="colorPanel">
+        <div class="swatch" style="background: #2563eb;" onclick="vibrate(); setTheme('theme-blue')"></div>
+        <div class="swatch" style="background: #db2777;" onclick="vibrate(); setTheme('theme-pink')"></div>
+        <div class="swatch" style="background: #ffffff; border: 1px solid #ccc;" onclick="vibrate(); setTheme('theme-white')"></div>
+        <div class="swatch" style="background: #0891b2;" onclick="vibrate(); setTheme('theme-cyan')"></div>
+        <div class="swatch" style="background: #0f172a;" onclick="vibrate(); setTheme('theme-black')"></div>
+    </div>
+
+    <header>
+        <div class="logo-area"><img src="https://pbs.twimg.com/media/G8PkwQaa4AEfLQk?format=jpg&name=large"></div>
+        <h1>فلافل البيك 👑</h1>
+        <p>الطعم الملكي في تعز</p>
+    </header>
+
+    <div id="menu-list" class="menu-grid"></div>
+
+    <div class="cart-bar">
+        <div id="grand-total" style="font-weight: 900; font-size: 1.2rem; color: var(--primary);">0 ريال</div>
+        <button id="main-btn" class="action-btn" onclick="vibrate(); openModal()" disabled>اطلب الآن</button>
+    </div>
+
+    <div id="orderModal" class="modal">
+        <div class="modal-box">
+            <h2 style="text-align:center">تأكيد الطلب 📝</h2>
+            <input type="text" id="cust-name" class="input-field" placeholder="الاسم الكريم">
+            <button onclick="vibrate(); getLocation()" id="location-btn" class="input-field" style="cursor:pointer; font-weight:bold; color:var(--primary); background:none; border: 1px solid var(--primary);">📍 تحديد موقعي الحالي</button>
+            <div id="location-status" style="text-align:center; font-size:0.85rem; margin-bottom:10px; color: #10B981; font-weight: bold;"></div>
+            <textarea id="cust-notes" class="input-field" placeholder="العنوان أو ملاحظات إضافية"></textarea>
+            <button class="action-btn" style="width:100%; font-size: 1.1rem;" onclick="vibrate(); sendToWhatsapp()">إرسال عبر واتساب 🚀</button>
+            <button onclick="closeModal()" style="width:100%; background:none; border:none; margin-top:10px; color:gray; cursor:pointer; font-family: 'Tajawal';">إلغاء</button>
+        </div>
+    </div>
+
+    <script>
+        const menu = [
+            { id: 1, name: "ساندويتش فلافل", price: 100, img: "https://pbs.twimg.com/media/G8PkXGja4AIRMH_?format=jpg&name=medium" },
+            { id: 2, name: "ساندويتش بيض", price: 150, img: "https://pbs.twimg.com/media/G8PkiqKa4AIw8Ad?format=jpg&name=medium" },
+            { id: 3, name: "وجبة ماكس", price: 500, img: "https://pbs.twimg.com/media/G8TMcuFa4AMZI9N?format=jpg&name=small" },
+            { id: 4, name: "قوة أسد ك", price: 200, img: "https://pbs.twimg.com/media/G8S2ocOaYAE___8?format=jpg&name=900x900" }
+        ];
+
+        let cart = {};
+        let userLoc = "";
+
+        // دالة الاهتزاز (Vibration API)
+        function vibrate() { if (navigator.vibrate) navigator.vibrate(50); }
+
+        function toggleColorPanel() { document.getElementById('colorPanel').classList.toggle('show'); }
+        function setTheme(t) { document.body.className = t; localStorage.setItem('user-theme', t); toggleColorPanel(); }
+        if(localStorage.getItem('user-theme')) document.body.className = localStorage.getItem('user-theme');
+
+        function renderMenu() {
+            const list = document.getElementById('menu-list');
+            list.innerHTML = '';
+            menu.forEach(item => {
+                const qty = cart[item.id] || 0;
+                list.innerHTML += `
+                    <div class="menu-item">
+                        <img src="${item.img}">
+                        <div class="item-content">
+                            <h3>${item.name}</h3>
+                            <div class="price-tag">${item.price} ريال</div>
+                            <div class="controls">
+                                <button class="btn-qty" onclick="vibrate(); updateQty(${item.id}, -1)">-</button>
+                                <span style="font-weight:bold; font-size:1.2rem;">${qty}</span>
+                                <button class="btn-qty" onclick="vibrate(); updateQty(${item.id}, 1)">+</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+        }
+
+        window.updateQty = (id, change) => {
+            cart[id] = (cart[id] || 0) + change;
+            if(cart[id] <= 0) delete cart[id];
+            renderMenu(); updateTotal();
+        }
+
+        function updateTotal() {
+            let total = 0;
+            Object.keys(cart).forEach(id => {
+                const item = menu.find(m => m.id == id);
+                total += item.price * cart[id];
+            });
+            document.getElementById('grand-total').innerText = total + " ريال";
+            document.getElementById('main-btn').disabled = total === 0;
+        }
+
+        window.getLocation = () => {
+            const status = document.getElementById('location-status');
+            status.innerText = "جاري التحديد... ⏳";
+            navigator.geolocation.getCurrentPosition(
+                (p) => {
+                    userLoc = `https://www.google.com/maps?q=${p.coords.latitude},${p.coords.longitude}`;
+                    status.innerText = "✅ تم تحديد موقعك";
+                    vibrate();
+                },
+                () => { status.innerText = "❌ فشل تحديد الموقع"; },
+                { enableHighAccuracy: true }
+            );
+        }
+
+        window.openModal = () => document.getElementById('orderModal').style.display = 'flex';
+        window.closeModal = () => document.getElementById('orderModal').style.display = 'none';
+
+        window.sendToWhatsapp = () => {
+            const name = document.getElementById('cust-name').value;
+            if(!name) return alert("يرجى إدخال الاسم");
+            
+            let total = 0;
+            let msg = `*طلب جديد من البيك* 👑\n━━━━━━━━━━━━━━\n\n`;
+            msg += `👤 *العميل:* ${name}\n`;
+            if(userLoc) msg += `📍 *الموقع:* ${userLoc}\n`;
+            msg += `\n*قائمة الطلبات:* 🍱\n------------------------------------------\n`;
+            
+            Object.keys(cart).forEach(id => {
+                const item = menu.find(m => m.id == id);
+                const sub = item.price * cart[id];
+                msg += `▪️ ${item.name}\n   ${cart[id]} × ${item.price} = ${sub} ريال\n\n`;
+                total += sub;
+            });
+            
+            msg += `------------------------------------------\n💰 *الإجمالي النهائي:* *${total} ريال*\n━━━━━━━━━━━━━━\n✨ _تم الإرسال عبر النظام الفائق_`;
+
+            window.open(`https://wa.me/967733971941?text=${encodeURIComponent(msg)}`);
+        }
+
+        renderMenu();
+    </script>
+</body>
+</html>
