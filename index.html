@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👑 فلافل وطعمية البيك | القائمة المطورة</title>
+    
+    <!-- خط تجوال -->
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --primary: #D32F2F; 
+            --secondary: #FFC107; 
+            --bg: #f4f7f6; 
+            --card-bg: #FFFFFF; 
+            --text: #2d3436; 
+            --border: #dfe6e9;
+            --shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        
+        body.dark-mode { 
+            --bg: #0f172a; 
+            --card-bg: #1e293b; 
+            --text: #f8fafc; 
+            --border: #334155;
+            --shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; transition: background 0.3s, color 0.3s, transform 0.1s; }
+        body { font-family: 'Tajawal', sans-serif; background-color: var(--bg); margin: 0; color: var(--text); padding-bottom: 140px; }
+
+        /* زر الوضع الليلي */
+        .theme-btn {
+            position: fixed; top: 20px; left: 20px; z-index: 1100;
+            background: var(--card-bg); padding: 10px; border-radius: 50%;
+            font-size: 1.5rem; border: 2px solid var(--border); cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        /* شريط تنبيه الدوام */
+        #delivery-status {
+            background: #c0392b; color: white; text-align: center; padding: 12px;
+            font-weight: bold; display: none; position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2); font-size: 0.9rem;
+        }
+
+        /* الهيدر */
+        header { 
+            background: var(--card-bg); padding: 40px 20px 30px; text-align: center;
+            border-bottom: 5px solid var(--primary); box-shadow: var(--shadow);
+            position: relative;
+        }
+        .logo-area img { 
+            width: 110px; height: 110px; border-radius: 50%; 
+            border: 4px solid var(--secondary); box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+        }
+
+        /* شريط التصنيفات */
+        .nav-scroller {
+            display: flex; justify-content: center; gap: 10px; padding: 15px;
+            overflow-x: auto; background: var(--bg); position: sticky; top: 0; z-index: 99;
+        }
+        .nav-item {
+            padding: 10px 25px; border-radius: 50px; border: 1px solid var(--border);
+            background: var(--card-bg); cursor: pointer; font-weight: bold; white-space: nowrap;
+        }
+        .nav-item.active { background: var(--primary); color: white; border-color: var(--primary); transform: scale(1.05); }
+
+        /* الشبكة */
+        .menu-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px; padding: 20px; max-width: 1200px; margin: 0 auto;
+        }
+
+        .menu-item {
+            background: var(--card-bg); border-radius: 25px; overflow: hidden;
+            border: 1px solid var(--border); box-shadow: var(--shadow);
+            display: flex; flex-direction: column;
+        }
+        .menu-item img { width: 100%; height: 220px; object-fit: cover; }
+        .item-content { padding: 18px; flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; }
+        .item-header h3 { margin: 0; font-size: 1.3rem; margin-bottom: 5px; }
+        .price-tag { color: var(--primary); font-weight: 900; font-size: 1.4rem; margin: 5px 0 15px; }
+
+        /* أزرار التحكم والاهتزاز */
+        .controls {
+            display: flex; align-items: center; justify-content: space-between;
+            background: var(--bg); border-radius: 15px; padding: 8px;
+        }
+        .btn-qty { 
+            width: 45px; height: 45px; border: none; background: var(--primary); color: white; 
+            border-radius: 12px; cursor: pointer; font-size: 1.4rem; font-weight: bold;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .btn-qty:active { transform: scale(0.9); } /* تأثير ضغط */
+        .qty-val { font-weight: 900; font-size: 1.3rem; }
+
+        /* بار السلة (مكبر) */
+        .cart-bar {
+            position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+            width: 92%; max-width: 600px; background: var(--card-bg);
+            padding: 20px 30px; border-radius: 35px; border: 3px solid var(--primary);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3); z-index: 2000;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .cart-info { display: flex; flex-direction: column; }
+        .cart-label { font-size: 0.9rem; opacity: 0.7; margin-bottom: 5px; }
+        .cart-total { font-weight: 900; font-size: 1.6rem; color: var(--primary); line-height: 1; }
+        
+        .action-btn { 
+            background: linear-gradient(45deg, #10B981, #059669); 
+            color: white; padding: 15px 35px; border-radius: 20px; border: none; 
+            font-weight: 900; font-size: 1.1rem; cursor: pointer; 
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.4);
+        }
+        .action-btn:disabled { background: #bdc3c7; box-shadow: none; cursor: not-allowed; }
+
+        /* المودال */
+        .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 3000; backdrop-filter: blur(5px); }
+        .modal-box { background: var(--card-bg); padding: 30px; border-radius: 30px; width: 90%; max-width: 450px; border: 1px solid var(--border); }
+        .input-field { width: 100%; padding: 15px; margin: 10px 0; border-radius: 15px; border: 1px solid var(--border); background: var(--bg); color: var(--text); font-family: inherit; font-size: 1rem; }
+        
+        .wa-btn {
+            background: #25D366; color: white; width: 100%; padding: 15px; margin-top: 10px;
+            border: none; border-radius: 15px; font-weight: bold; font-size: 1.2rem; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+
+        @media (max-width: 600px) {
+            .menu-grid { grid-template-columns: 1fr 1fr; gap: 12px; padding: 12px; }
+            .menu-item img { height: 140px; }
+            .item-header h3 { font-size: 1rem; }
+            .price-tag { font-size: 1.1rem; }
+            .btn-qty { width: 35px; height: 35px; font-size: 1.2rem; }
+            .cart-total { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- زر الوضع الليلي -->
+    <button class="theme-btn" onclick="toggleTheme()" id="theme-icon">🌛</button>
+
+    <!-- شريط التنبيه (يظهر فقط خارج أوقات العمل) -->
+    <div id="delivery-status">
+        🚫 انتهى وقت التوصيل (7ص - 10م) .. ولكننا لا زلنا هنا لاستقبال طلبك للغد!
+    </div>
+
+    <header>
+        <div class="logo-area"><img src="https://pbs.twimg.com/media/G8PkwQaa4AEfLQk?format=jpg&name=large"></div>
+        <h1 style="margin: 15px 0 5px;">فلافل البيك 👑</h1>
+        <p style="margin: 0; opacity: 0.8;">الطعم الملكي في قلب تعز</p>
+    </header>
+
+    <div class="nav-scroller">
+        <div class="nav-item active" onclick="filter('all', this)">الكل</div>
+        <div class="nav-item" onclick="filter('سندوتشات', this)">سندوتشات</div>
+        <div class="nav-item" onclick="filter('وجبات', this)">وجبات</div>
+        <div class="nav-item" onclick="filter('مشروبات', this)">مشروبات</div>
+    </div>
+
+    <div id="menu-list" class="menu-grid"></div>
+
+    <div class="cart-bar" id="cart-summary">
+        <div class="cart-info">
+            <span class="cart-label">إجمالي الفاتورة</span>
+            <span id="grand-total" class="cart-total">0</span>
+        </div>
+        <button id="main-btn" class="action-btn" onclick="openCustomerModal()" disabled>السلة فارغة</button>
+    </div>
+
+    <div id="customer-modal" class="modal">
+        <div class="modal-box">
+            <h2 style="text-align:center; margin-bottom:20px">بيانات الفاتورة 📝</h2>
+            
+            <label style="font-size:0.9rem; margin-right:5px">الاسم الكريم:</label>
+            <input type="text" id="cust-name" class="input-field" placeholder="مثال: محمد أحمد">
+            
+            <label style="font-size:0.9rem; margin-right:5px">رقم الهاتف (واتساب):</label>
+            <input type="tel" id="cust-phone" class="input-field" placeholder="00967...">
+            
+            <label style="font-size:0.9rem; margin-right:5px">ملاحظات الطلب:</label>
+            <textarea id="cust-notes" class="input-field" placeholder="بدون شطة، زيادة طحينة..."></textarea>
+            
+            <div style="font-size:0.8rem; color:#d32f2f; margin:10px 0; background:#ffebee; padding:10px; border-radius:10px;">
+                📍 <b>تنبيه:</b> سيتم إرسال موقعك الحالي بدقة عالية تلقائياً مع الرسالة لتسهيل التوصيل.
+            </div>
+
+            <button class="wa-btn" onclick="getLocationAndSend()">
+                <span>إتمام الطلب وإرسال</span> 🚀
+            </button>
+            <button onclick="document.getElementById('customer-modal').style.display='none'" style="width:100%; background:none; border:none; margin-top:15px; color:var(--text); cursor:pointer">تراجع</button>
+        </div>
+    </div>
+
+    <script>
+        const menu = [
+            { id: 1, name: "ساندويتش فلافل", price: 100, cat: "سندوتشات", img: "https://pbs.twimg.com/media/G8PkXGja4AIRMH_?format=jpg&name=medium" },
+            { id: 2, name: "ساندويتش بيض", price: 150, cat: "سندوتشات", img: "https://pbs.twimg.com/media/G8PkiqKa4AIw8Ad?format=jpg&name=medium" },
+            { id: 3, name: "وجبة ماكس", price: 500, cat: "وجبات", img: "https://pbs.twimg.com/media/G8TMcuFa4AMZI9N?format=jpg&name=small" },
+            { id: 4, name: "صحن بطاطس", price: 400, cat: "وجبات", img: "https://pbs.twimg.com/media/G8PksWOboAAYpjH?format=jpg&name=small" },
+            { id: 5, name: "سفن أب", price: 200, cat: "مشروبات", img: "https://pbs.twimg.com/media/G8TLNMCbwAAZqH1?format=jpg&name=medium" },
+            { id: 6, name: "قوة أسد ص", price: 100, cat: "مشروبات", img: "https://pbs.twimg.com/media/G8TMTB1a4AQBEr0?format=jpg&name=medium" },
+            { id: 7, name: "قوة أسد ك", price: 200, cat: "مشروبات", img: "https://pbs.twimg.com/media/G8S2ocOaYAE___8?format=jpg&name=900x900" }
+        ];
+
+        let cart = JSON.parse(localStorage.getItem('bik_cart')) || {};
+
+        // --- وظيفة تنسيق الأرقام (1,000) ---
+        function formatNumber(num) {
+            return num.toLocaleString('en-US');
+        }
+
+        // --- فحص ساعات العمل (7ص - 10م) ---
+        function checkHours() {
+            const hour = new Date().getHours();
+            // من 7 (مشمول) حتى 22 (10 مساءً - غير مشمول)
+            if(hour < 7 || hour >= 22) {
+                document.getElementById('delivery-status').style.display = 'block';
+            }
+        }
+        checkHours();
+
+        // --- الوضع الليلي ---
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const isDark = document.body.classList.contains('dark-mode');
+            document.getElementById('theme-icon').innerText = isDark ? "🌞" : "🌛";
+            localStorage.setItem('theme', isDark ? 'dark' : 'light');
+        }
+        if(localStorage.getItem('theme') === 'dark') toggleTheme();
+
+        function renderMenu(category = 'all') {
+            const list = document.getElementById('menu-list');
+            list.innerHTML = '';
+            menu.filter(i => category === 'all' || i.cat === category).forEach(item => {
+                const qty = cart[item.id] || 0;
+                list.innerHTML += `
+                    <div class="menu-item">
+                        <img src="${item.img}" loading="lazy">
+                        <div class="item-content">
+                            <div class="item-header">
+                                <h3>${item.name}</h3>
+                                <div class="price-tag">${formatNumber(item.price)} ريال</div>
+                            </div>
+                            <div class="controls">
+                                <button class="btn-qty" onclick="updateQty(${item.id}, -1)">-</button>
+                                <span class="qty-val">${qty}</span>
+                                <button class="btn-qty" onclick="updateQty(${item.id}, 1)">+</button>
+                            </div>
+                        </div>
+                    </div>`;
+            });
+            updateTotal();
+        }
+
+        window.updateQty = (id, change) => {
+            // اهتزاز الهاتف عند الضغط (Haptic Feedback)
+            if (navigator.vibrate) navigator.vibrate(50);
+
+            cart[id] = (cart[id] || 0) + change;
+            if(cart[id] <= 0) delete cart[id];
+            localStorage.setItem('bik_cart', JSON.stringify(cart));
+            
+            // تحديث الواجهة الذكي
+            const activeTab = document.querySelector('.nav-item.active').innerText;
+            renderMenu(activeTab === 'الكل' ? 'all' : activeTab);
+        }
+
+        function updateTotal() {
+            let total = 0;
+            Object.keys(cart).forEach(id => total += menu.find(m => m.id == id).price * cart[id]);
+            
+            document.getElementById('grand-total').innerText = formatNumber(total) + " ريال";
+            
+            const btn = document.getElementById('main-btn');
+            btn.disabled = total === 0;
+            btn.innerHTML = total > 0 ? "عرض الفاتورة 🛒" : "السلة فارغة";
+        }
+
+        window.filter = (cat, el) => {
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            el.classList.add('active');
+            renderMenu(cat === 'الكل' ? 'all' : cat);
+        }
+
+        window.openCustomerModal = () => document.getElementById('customer-modal').style.display = 'flex';
+
+        // --- نظام تحديد الموقع وإرسال الواتساب الفخم ---
+        function getLocationAndSend() {
+            const btn = document.querySelector('.wa-btn');
+            btn.innerText = "جاري تحديد موقعك... 🛰️";
+            btn.disabled = true;
+
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const link = `https://www.google.com/maps?q=${position.coords.latitude},${position.coords.longitude}`;
+                        sendToWhatsapp(link);
+                    },
+                    (error) => {
+                        alert("تعذر تحديد الموقع، سيتم الإرسال بدونه.");
+                        sendToWhatsapp("موقع العميل (لم يتم التحديد)");
+                    },
+                    { enableHighAccuracy: true } // دقة عالية جداً
+                );
+            } else {
+                sendToWhatsapp("غير مدعوم");
+            }
+        }
+
+        function sendToWhatsapp(locationLink) {
+            const name = document.getElementById('cust-name').value;
+            const phone = document.getElementById('cust-phone').value;
+            const notes = document.getElementById('cust-notes').value;
+
+            if(!name) {
+                document.querySelector('.wa-btn').innerText = "إتمام الطلب وإرسال 🚀";
+                document.querySelector('.wa-btn').disabled = false;
+                return alert("الرجاء كتابة الاسم الكريم");
+            }
+
+            const date = new Date().toLocaleDateString('ar-YE');
+            const time = new Date().toLocaleTimeString('ar-YE');
+
+            // --- تصميم الرسالة كفاتورة ---
+            let msg = `🧾 *فاتورة طلب إلكتروني | فلافل البيك*
+ــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+📅 التاريخ: ${date} - ${time}
+👤 العميل: ${name}
+📱 الهاتف: ${phone}
+ــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+📍 *موقع التوصيل (GPS):*
+${locationLink}
+ــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+🛒 *الطلبات:*
+
+`;
+
+            let total = 0;
+            Object.keys(cart).forEach(id => {
+                const item = menu.find(m => m.id == id);
+                const subTotal = item.price * cart[id];
+                msg += `▪️ ${item.name}
+   ${cart[id]} × ${formatNumber(item.price)} = ${formatNumber(subTotal)} ريال\n`;
+                total += subTotal;
+            });
+
+            if(notes) msg += `\n📝 *ملاحظات:* ${notes}\n`;
+
+            msg += `
+ــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+💰 *الإجمالي النهائي: ${formatNumber(total)} ريال*
+ــــــــــــــــــــــــــــــــــــــــــــــــــــــــ
+✅ شكراً لطلبك من البيك!`;
+
+            // إعادة الزر وفتح الواتساب
+            document.querySelector('.wa-btn').innerText = "إتمام الطلب وإرسال 🚀";
+            document.querySelector('.wa-btn').disabled = false;
+            
+            window.open(`https://wa.me/967733971941?text=${encodeURIComponent(msg)}`);
+        }
+
+        renderMenu();
+    </script>
+</body>
+</html>
